@@ -5,7 +5,7 @@
 #include <stdint.h>
 
 /* /proc/meminfo : key-value pairs -> look up specific feild */
-u_int64_t proc_meminfo_get_kb(const char *field);
+uint64_t proc_meminfo_get_kb(const char *field);
 
 /* /proc/vmstat : look up a single counter */
 uint64_t proc_vmstat_get(const char *field);
