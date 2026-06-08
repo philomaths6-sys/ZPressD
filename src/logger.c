@@ -54,7 +54,7 @@ void _log_write(LogLevel level, const char *file, int line, const char *fmt, ...
     strftime(tbuf, sizeof(tbuf), "%Y-%m-%d %H:%M:%S", &tm_info);
 
     FILE *dest = g_logfile ? g_logfile : stderr;
-    fprintf(dest, "[%s.%031d] [%s] (%s:%d) %s\n", tbuf, (int)(ts.tv_nsec/1000), level_str[level], file, line, msg);
+    fprintf(dest, "[%s.%03ld] [%s] (%s:%d) %s\n", tbuf, ts.tv_nsec/1000000, level_str[level], file, line, msg);
     fflush(dest);
 
     if(g_use_syslog) {
