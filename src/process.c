@@ -58,8 +58,8 @@ int proclist_refresh(ProcessList *p1) {
         /* Compute deltas from previous snapshot */
         ProcessInfo *prev = proclist_find_pid(p1, pids[i]);
         if(prev) {
-            pnew->minflt_delta = pnew.minflt - prev->minflt;
-            pnew->majflt_delta = pnew.majflt - prev->majflt;
+            pnew->minflt_delta = pnew->minflt - prev->minflt;
+            pnew->majflt_delta = pnew->majflt - prev->majflt;
             pnew->idle_seconds = prev->idle_seconds;  /* will be updated in cold_score_all */
             pnew->last_hinted_at = prev->last_hinted_at;
         }
