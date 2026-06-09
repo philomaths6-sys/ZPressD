@@ -12,6 +12,8 @@
 #define MADV_PAGEOUT 21   /* Linux 5.4+ */
 #endif
 
+#define MAX_CANDIDATES 32
+
 
 uint64_t hint_process(ProcessInfo *proc, uint64_t *budget_remaining, int dry_run) {
     if(!proc || !budget_remaining || *budget_remaining == 0) return 0;
@@ -60,8 +62,14 @@ int run_compression_cycle(ProcessList *p1, const PressureState *ps, const Config
     uint64_t budget = cfg->madvise_budget_mb * 1024 * 1024;
 
     /* Get Top-N candidates */
-    ProcessInfo *candidates[32];
-    int n = cold_top_candidates(p1,cfg->top_candidates_n, candidates);
+    size_t top_n = cfg->top_candidates_n;
+    if (top_n > MAX_CANDIDATES) {
+        ZP_WARN("top_candidates_n %d exceeds max %d, clamping", (int)top_n, MAX_CANDIDATES);
+        top_n = MAX_CANDIDATES;
+    }
+
+    ProcessInfo *candidates[MAX_CANDIDATES];
+    int n = cold_top_candidates(p1, top_n, candidates);
 
     if (n==0) {
         ZP_INFO("Compression cycle: no eligible candidates");
