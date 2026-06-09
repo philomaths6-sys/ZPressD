@@ -127,7 +127,8 @@ int run_compression_cycle(ProcessList *p1, const PressureState *ps, const Config
     int n = cold_top_candidates(p1, top_n, candidates, cfg);
 
     if (n==0) {
-        ZP_INFO("Compression cycle: no eligible candidates");
+        // ZP_INFO("Compression cycle: no eligible candidates");
+        ZP_DEBUG("Compression cycle: no eligible candidates");
         return 0;
     }
 
