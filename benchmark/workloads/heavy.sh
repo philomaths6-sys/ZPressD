@@ -1,42 +1,35 @@
 #!/bin/bash
-# Scenario: Heavy — The canonical ZPressD demonstration workload
+# Scenario: Heavy — ZPressD vs baseline under simultaneous memory pressure
 #
-# What this simulates:
-#   A system with several idle background daemons/services consuming large amounts
-#   of RAM (like chrome, electron, java services). Then a new foreground task
-#   demands memory, causing pressure.
+# What this does:
+#   Spawns 3 idle background processes (CLASS_BACKGROUND — no TTY) holding 60% RAM,
+#   then immediately starts stress-ng demanding another 40%. This creates ~100% RAM
+#   commitment from the start.
 #
-# What ZPressD does:
-#   In the 30s idle window, ZPressD's cold_score_all() identifies the python
-#   background processes (no TTY, idle → high cold score), calls
-#   process_madvise(MADV_PAGEOUT) on their anonymous pages, pushing them
-#   into zswap compressed pool. When stress-ng fires, the RAM is already freed.
+# Baseline: kernel must scramble to evict background pages to disk swap reactively
+#   → high pswpout_rate, high PSI stall time
 #
-# BASELINE result: kernel scrambles to evict pages synchronously to disk swap
-#   → high pswpout_rate, high PSI full stall, degraded interactive latency
-# ZPRESSD result: background pages already in zswap → stress-ng gets memory
-#   from freed RAM, pswpout_rate stays low, PSI stays near 0
+# ZPressD: daemon detects pressure immediately, cold_score_all() picks the idle
+#   python workers (zero faults, high RSS), process_madvise(MADV_PAGEOUT) compresses
+#   them into zswap. Disk swap I/O drops. PSI stall drops.
 
-echo "[Workload: Heavy] Starting idle background processes (cold target for ZPressD)..."
+echo "[Workload: Heavy] Starting..."
 
-# Spawn 3 idle background workers — no TTY, so ZPressD classifies them as CLASS_BACKGROUND.
-# They allocate compressible zero-filled memory (best case for zswap, realistic for idle daemons).
-# Total allocation: ~60% of system RAM split across 3 processes.
-# Use awk for the division to avoid bash integer overflow on large RAM systems
 ALLOC_BYTES=$(awk '/MemTotal/ {printf "%d", $2 * 1024 / 5}' /proc/meminfo)
 
-# Write the python worker script to a temp file to avoid quoting nightmares
+# Write python worker to temp file (avoids shell quoting issues in heredocs)
 WORKER_SCRIPT=$(mktemp /tmp/zpressd_worker_XXXX.py)
 cat > "$WORKER_SCRIPT" << 'PYEOF'
 import sys, time, mmap
 size = int(sys.argv[1])
 buf = mmap.mmap(-1, size)
-# Write zeros — highly compressible, realistic for idle daemon heap
+# Zero-filled: highly compressible — zswap gets excellent ratio on this
 buf.write(b'\x00' * size)
-print(f'[bg-worker] allocated {size//1024//1024}MB, now idle', flush=True)
+print(f'[bg-worker] {size//1024//1024}MB allocated, idle', flush=True)
 time.sleep(600)
 PYEOF
 
+# 3 background workers = 3 × 20% = 60% RAM, all idle (prime ZPressD targets)
 python3 "$WORKER_SCRIPT" "$ALLOC_BYTES" &
 BG1=$!
 python3 "$WORKER_SCRIPT" "$ALLOC_BYTES" &
@@ -44,23 +37,17 @@ BG2=$!
 python3 "$WORKER_SCRIPT" "$ALLOC_BYTES" &
 BG3=$!
 
-echo "[Workload: Heavy] Background workers running (PIDs: $BG1 $BG2 $BG3)."
-echo "[Workload: Heavy] Sleeping 30s — ZPressD should compress these pages during this window..."
-# This 30-second window is where ZPressD acts:
-# cooling_period_secs=30, poll_interval_active=100ms → multiple compression cycles happen here
-sleep 30
+echo "[Workload: Heavy] Background workers: PIDs $BG1 $BG2 $BG3 (60% RAM idle)"
 
-echo "[Workload: Heavy] Launching foreground memory pressure (stress-ng)..."
-# Now demand 80% of RAM from the foreground.
-# Total committed = 60% (background) + 80% (stress-ng) = 140% of RAM.
-# Baseline: kernel must synchronously evict → disk swap spike + PSI spike.
-# ZPressD: background already in zswap → stress-ng gets physical RAM → no disk spike.
-stress-ng --vm 2 --vm-bytes 40% --vm-keep \
+# Start foreground pressure immediately — no wait.
+# ZPressD begins compressing the background workers as soon as it detects the pressure spike.
+# Baseline has no daemon, so kernel must synchronously evict to disk swap instead.
+echo "[Workload: Heavy] Starting stress-ng (40% RAM)..."
+stress-ng --vm 2 --vm-bytes 20% --vm-keep \
           --timeout 0 \
           --metrics-brief &
 STRESSNG=$!
 
-# Cleanup temp script and processes on exit
 cleanup() {
     kill $BG1 $BG2 $BG3 $STRESSNG 2>/dev/null || true
     pkill -9 stress-ng 2>/dev/null || true

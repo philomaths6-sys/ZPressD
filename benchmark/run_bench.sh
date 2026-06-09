@@ -62,13 +62,7 @@ run_scenario() {
     [ -f /sys/kernel/debug/zswap/written_back_pages ] && \
         ZSWAP_WB_START=$(cat /sys/kernel/debug/zswap/written_back_pages)
 
-    # Start metrics collector (2s granularity, captures all ZPressD-relevant signals)
-    bash "$SCRIPT_DIR/collect_metrics.sh" "$OUTFILE" &
-    COLLECTOR_PID=$!
-
     # Start daemon BEFORE workload in optimized mode.
-    # This is critical: the daemon needs to be alive during the 30s idle window
-    # in heavy.sh so it can run compression cycles on the background workers.
     DAEMON_PID=""
     if [ "$MODE" = "optimized" ]; then
         $DAEMON -f &
@@ -76,6 +70,11 @@ run_scenario() {
         echo "[bench] zpressd started (PID $DAEMON_PID)"
         sleep 2  # let daemon warm up (initial proclist_refresh + classify)
     fi
+
+    # Start CSV collector now — daemon is live (optimized) or baseline is clean.
+    # Either way this is the meaningful t=0 for the graph.
+    bash "$SCRIPT_DIR/collect_metrics.sh" "$OUTFILE" &
+    COLLECTOR_PID=$!
 
     # Start workload
     bash "$SCRIPT_DIR/workloads/${WORKLOAD}.sh" &
