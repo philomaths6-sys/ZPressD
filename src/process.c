@@ -10,6 +10,7 @@ ProcessList *proclist_alloc(int capacity) {
     ProcessList *p1 = malloc(sizeof(ProcessList));
     if(!p1) return NULL;
     p1->procs = calloc(capacity, sizeof(ProcessInfo));
+    if(!p1->procs) { free(p1); return NULL; }
     p1->count = 0;
     p1->capacity = capacity;
     return p1;
@@ -66,8 +67,10 @@ int proclist_refresh(ProcessList *p1) {
     }
     /* replace old list */
     if(new_count > p1->capacity) {
-        p1->procs = realloc(p1->procs, new_count * sizeof(ProcessInfo));
-        p1->capacity = new_count;
+    ProcessInfo *tmp = realloc(p1->procs, new_count * sizeof(ProcessInfo));
+    if(!tmp) { free(p1->procs); p1->procs = NULL; return -1; }
+    p1->procs = tmp;
+    p1->capacity = new_count;
     }
     memcpy(p1->procs, new_procs, new_count * sizeof(ProcessInfo));
     p1->count = new_count;
