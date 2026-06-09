@@ -114,7 +114,9 @@ int proc_read_maps(pid_t pid, VmaRegion **out, int *count) {
     while (fgets(line, sizeof(line), f)) {
         if(n == cap) {
             cap *= 2;
-            *out = realloc(*out, cap * sizeof(VmaRegion));
+            VmaRegion *tmp = realloc(*out, cap * sizeof(VmaRegion));
+            if(!tmp) { free(*out); *out = NULL; fclose(f); return -1; }
+            *out = tmp;
         }
         VmaRegion *r = &(*out)[n];
         memset(r, 0, sizeof(*r));
