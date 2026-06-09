@@ -66,7 +66,7 @@ int main(int argc, char *argv[]) {
 
     /* Init logger */
     logger_init((LogLevel)cfg.log_level, cfg.log_file, !foreground);
-    LOG_INFO("zpressd %s starting (dry-run=%d foreground=%d)", ZPRESSD_VERSION_STR, cfg.dry_run, foreground);
+    ZP_INFO("zpressd %s starting (dry-run=%d foreground=%d)", ZPRESSD_VERSION_STR, cfg.dry_run, foreground);
     config_dump(&cfg);
 
     if(!foreground) daemonize();
@@ -80,19 +80,19 @@ int main(int argc, char *argv[]) {
 
     /* Allocate structures */
     ProcessList *p1 = proclist_alloc(MAX_PROCESSES);
-    if (!p1) { LOG_FATAL("OOM allocating process list"); return 1; }
+    if (!p1) { ZP_FATAL("OOM allocating process list"); return 1; }
 
     PressureState ps;
     ZswapState zs;
     zswap_read_state(&zs);
 
-    if (!zswap_available()) { LOG_WARN("zswap not available - tuning disabled"); }
+    if (!zswap_available()) { ZP_WARN("zswap not available - tuning disabled"); }
 
     DaemonState state = STATE_IDLE;
     int consec_low   = 0;     /* consecutive LOW reading for hysteresis */
     int consec_active = 0;     /* consecutive elevated reading */
 
-    LOG_INFO("Entering main loop");
+    ZP_INFO("Entering main loop");
 
     while(g_running) {
         /* Hot-reload config on SIGHUP */
@@ -101,7 +101,7 @@ int main(int argc, char *argv[]) {
             if (dry_run) cfg.dry_run = 1;
             config_dump(&cfg);
             g_reload_config = 0;
-            LOG_INFO("Config reloaded");
+            ZP_INFO("Config reloaded");
         }
 
         /* Sample pressure */
@@ -115,7 +115,7 @@ int main(int argc, char *argv[]) {
                     if( consec_active >= 3) {
                         state = STATE_MONITORING;
                         consec_active = 0;
-                        LOG_INFO("IDLE -> MONITORING (PSI=%.2f)", ps.psi_some_avg10);  
+                        ZP_INFO("IDLE -> MONITORING (PSI=%.2f)", ps.psi_some_avg10);  
                     }  
                 } else consec_active = 0;
                 sleep_ms(cfg.poll_interval_idle_ms);
@@ -127,10 +127,10 @@ int main(int argc, char *argv[]) {
                 cold_score_all(p1);
                 if (ps.level >= PRESSURE_MODERATE) {
                     state = STATE_COMPRSESSING;
-                    LOG_INFO("MONITORING -> COMPRESSING (PSI=%.2f/%.2f)", ps.psi_some_avg10, ps.psi_full_avg10);
+                    ZP_INFO("MONITORING -> COMPRESSING (PSI=%.2f/%.2f)", ps.psi_some_avg10, ps.psi_full_avg10);
                 } else if (ps.level == PRESSURE_NONE) {
                     state = STATE_IDLE;
-                    LOG_INFO("MONITORING -> IDLE (pressure cleared)");
+                    ZP_INFO("MONITORING -> IDLE (pressure cleared)");
                 }
                 sleep_ms(cfg.poll_interval_active_ms);
                 break;
@@ -146,18 +146,18 @@ int main(int argc, char *argv[]) {
 
                 HintResult hr;
                 run_compression_cycle(p1, &ps, &cfg, &hr);
-                LOG_INFO("[%s] hinted=%d procs %.1f MB | PSI=%.2f/%.2f MemAvail=%.1f%% ",
+                ZP_INFO("[%s] hinted=%d procs %.1f MB | PSI=%.2f/%.2f MemAvail=%.1f%% ",
                     pressure_level_name(ps.level), hr.processes_hinted, (double)hr.total_hinted_bytes/(1024*1024),
                     ps.psi_some_avg10, ps.psi_full_avg10, ps.mem_avail_pct);
                 
                 if(ps.level < PRESSURE_MODERATE) {
                     state = STATE_RECOVERY;
                     consec_low = 0;
-                    LOG_INFO("COMPRESSING -> RECOVERY");
+                    ZP_INFO("COMPRESSING -> RECOVERY");
                 }
                 if(ps.level == PRESSURE_CRICTICAL) {
                     state = STATE_EMERGENCY;
-                    LOG_WARN("-> EMERGENCY: PSI=%.2f MemAvail=%.1f%%", ps.psi_full_avg10, ps.mem_avail_pct);
+                    ZP_WARN("-> EMERGENCY: PSI=%.2f MemAvail=%.1f%%", ps.psi_full_avg10, ps.mem_avail_pct);
                 }
                 sleep_ms(cfg.poll_interval_active_ms);
                 break;
@@ -169,12 +169,12 @@ int main(int argc, char *argv[]) {
                     if (consec_low >=5){
                         zswap_tune(&zs, PRESSURE_NONE, cfg.dry_run);  /* revert zswap immediately on recovery */
                         state = STATE_IDLE;
-                        LOG_INFO("RECOVERY -> IDLE ");
+                        ZP_INFO("RECOVERY -> IDLE ");
                     }
                 } else {
                         consec_low = 0;
                         state = STATE_COMPRSESSING;
-                        LOG_INFO("RECOVERY -> COMPRESSING (pressure returned)");
+                        ZP_INFO("RECOVERY -> COMPRESSING (pressure returned)");
                     }
                 sleep_ms(cfg.poll_interval_active_ms);
                 break;
@@ -189,18 +189,18 @@ int main(int argc, char *argv[]) {
                 emergency_cfg.madvise_budget_mb = 2048; /*2 GB budget */
                 HintResult hr;
                 run_compression_cycle(p1, &ps, &emergency_cfg, &hr);
-                LOG_WARN("EMERGENCY cycle: hinted %d procs %.1f MB ",
+                ZP_WARN("EMERGENCY cycle: hinted %d procs %.1f MB ",
                     hr.processes_hinted, (double)hr.total_hinted_bytes/(1024*1024));
                 if(ps.level < PRESSURE_CRICTICAL) {
                     state = STATE_RECOVERY;
-                    LOG_INFO("EMERGENCY -> RECOVERY ");
+                    ZP_INFO("EMERGENCY -> RECOVERY ");
                 }
                 sleep_ms(cfg.poll_interval_active_ms);
                 break;
             }
         }   
     }
-    LOG_INFO("zpressd shutting down (received signal)");
+    ZP_INFO("zpressd shutting down (received signal)");
     proclist_free(p1);
     logger_close();
     unlink(ZPRESSD_PID_FILE);

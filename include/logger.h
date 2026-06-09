@@ -20,11 +20,17 @@ void logger_close(void);
 void _log_write(LogLevel level, const char *file, int line, const char *fmt, ...);
 
 
-#define ZP_DEBUG(fmt, ...) _log_write(LOG_LEVEL_DEBUG, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
-#define ZP_INFO(fmt, ...)  _log_write(LOG_LEVEL_INFO,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)
-#define ZP_WARN(fmt, ...)  _log_write(LOG_LEVEL_WARN,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)
-#define ZP_ERROR(fmt, ...) _log_write(LOG_LEVEL_ERROR, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
-#define ZP_FATAL(fmt, ...) _log_write(LOG_LEVEL_FATAL, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+#define ZP_DEBUG(...) _log_write(LOG_LEVEL_DEBUG, __FILE__, __LINE__, __VA_ARGS__)
+#define ZP_INFO(...)  _log_write(LOG_LEVEL_INFO,  __FILE__, __LINE__, __VA_ARGS__)
+#define ZP_WARN(...)  _log_write(LOG_LEVEL_WARN,  __FILE__, __LINE__, __VA_ARGS__)
+#define ZP_ERROR(...) _log_write(LOG_LEVEL_ERROR, __FILE__, __LINE__, __VA_ARGS__)
+#define ZP_FATAL(...) _log_write(LOG_LEVEL_FATAL, __FILE__, __LINE__, __VA_ARGS__)
+
+// #define ZP_DEBUG(fmt, ...) _log_write(LOG_LEVEL_DEBUG, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+// #define ZP_INFO(fmt, ...)  _log_write(LOG_LEVEL_INFO,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+// #define ZP_WARN(fmt, ...)  _log_write(LOG_LEVEL_WARN,  __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+// #define ZP_ERROR(fmt, ...) _log_write(LOG_LEVEL_ERROR, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
+// #define ZP_FATAL(fmt, ...) _log_write(LOG_LEVEL_FATAL, __FILE__, __LINE__, fmt, ##__VA_ARGS__)
 
 
 // #define LOG_DEBUG(fmt, ...) _log_write(LOG_LEVEL_DEBUG, __FILE__, __LINE__, fmt, ##__VA_ARGS__)

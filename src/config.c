@@ -32,7 +32,7 @@ int config_load(Config *cfg, const char *path) {
     config_defaults(cfg);
     FILE *f = fopen(path, "r");
     if(!f) {
-        LOG_WARN("config: cannot open  %s, using defaults", path);
+        ZP_WARN("config: cannot open  %s, using defaults", path);
         return 0;  /* Defaults are valid */
     }
 
@@ -63,9 +63,9 @@ int config_load(Config *cfg, const char *path) {
 
 
 void config_dump(const Config *cfg) {
-    LOG_INFO("Config: dry_run=%d tune_zswap=%d budget=%luMB candidates=%d",
+    ZP_INFO("Config: dry_run=%d tune_zswap=%d budget=%luMB candidates=%d",
         cfg->dry_run, cfg->tune_zswap, cfg->madvise_budget_mb, cfg->top_candidates_n);
-    LOG_INFO("Config: thresholds psi_some=%.1f/%.1f psi_full=%.1f/%.1f",
+    ZP_INFO("Config: thresholds psi_some=%.1f/%.1f psi_full=%.1f/%.1f",
         cfg->threshold_low_psi_some, cfg->threshold_mod_psi_some, 
-        cfg->threshold_high_psi_full, cfg->thrshold_crit_psi_full);
+        cfg->threshold_high_psi_full, cfg->threshold_crit_psi_full);
 }

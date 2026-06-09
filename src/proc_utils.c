@@ -38,7 +38,7 @@ uint64_t proc_vmstat_get(const char *field) {
 
 int proc_parse_psi(const char *path, PsiMetrics *out) {
     FILE *f = fopen(path, "r");
-    if(!f) { LOG_WARN("PSI unavailable: %s", path); return -1; }
+    if(!f) { ZP_WARN("PSI unavailable: %s", path); return -1; }
     memset(out, 0, sizeof(*out));
     char line[256];
     while (fgets(line,sizeof(line),f)) {

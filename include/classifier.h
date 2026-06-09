@@ -14,7 +14,7 @@
 */
 
 /* Classify a single process. Updates proc->class*/
-void classify_process(ProcessInfo *proc, Config *cfg);
+void classify_process(ProcessInfo *proc,const Config *cfg);
 
 /* Classify all processes in list. */
 void classify_all(ProcessList *p1, const Config *cfg);

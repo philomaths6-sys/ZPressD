@@ -27,7 +27,7 @@ void cold_score_compute(ProcessInfo *proc) {
         proc->cold_score *= 1.2;
     }
 
-    LOG_DEBUG("PID %d (%s): fault_delta=%lu, rss=%lukB, idle=%lus, score=%.4f",
+    ZP_DEBUG("PID %d (%s): fault_delta=%lu, rss=%lukB, idle=%lus, score=%.4f",
                 proc->pid, proc->comm, fault_delta, proc->rss_kb, proc->idle_seconds, proc->cold_score);
 }
 

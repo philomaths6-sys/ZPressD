@@ -16,7 +16,7 @@ typedef struct {
     double threshold_low_psi_some;         /* default : 5.0  */
     double threshold_mod_psi_some;         /* default : 20.0 */
     double threshold_high_psi_full;        /* default : 5.0  */
-    double thrshold_crit_psi_full;         /* default : 20.0 */
+    double threshold_crit_psi_full;         /* default : 20.0 */
     double threshold_low_mem_pct;          /* default : 40.0 */
     double threshold_high_mem_pct;         /* default : 10.0 */
     double threshold_crit_mem_pct;         /* default : 3.0  */

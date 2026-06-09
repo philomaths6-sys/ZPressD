@@ -10,7 +10,7 @@
 static int write_sysfs(const char *path, const char *val) {
     FILE *f = fopen(path, "w");
     if(!f) {
-        LOG_ERROR("zswap_tuner: cannot write %s: %s", path, strerror(errno));
+        ZP_ERROR("zswap_tuner: cannot write %s: %s", path, strerror(errno));
         return -1;
     }
     fprintf(f, "%s\n", val);
@@ -50,7 +50,7 @@ static PressureLevel s_last_level = PRESSURE_NONE;
 
 int zswap_tune(ZswapState *zs, PressureLevel level, int dry_run) {
     if(!zs->zswap_enabled) {
-        // LOG_WARN("zswap_tune: zswap not enabled on this system"); //added this extra
+        // ZP_WARN("zswap_tune: zswap not enabled on this system"); //added this extra
         return 0;
     }
 
@@ -81,20 +81,20 @@ int zswap_tune(ZswapState *zs, PressureLevel level, int dry_run) {
     snprintf(pool_str, sizeof(pool_str), "%d", pool_pct);
 
     if(dry_run) {
-        LOG_INFO("[DRY-RUN] zswap: would set compressor=%s pool=%d%%",compressor, pool_pct);
+        ZP_INFO("[DRY-RUN] zswap: would set compressor=%s pool=%d%%",compressor, pool_pct);
         return 0;
     }
 
     int changed = 0;
     if(strcmp(zs->current_compressor, compressor) != 0) {
         write_sysfs(ZSWAP_COMPRESSOR, compressor);
-        LOG_INFO("zswap: compressor %s -> %s", zs->current_compressor, compressor);
+        ZP_INFO("zswap: compressor %s -> %s", zs->current_compressor, compressor);
         strncpy(zs->current_compressor, compressor, sizeof(zs->current_compressor)-1);
         changed = 1;
     }
     if(zs->current_max_pool_pct != pool_pct) {
         write_sysfs(ZSWAP_MAX_POOL, pool_str);
-        LOG_INFO("zswap: max_pool_percent %d%% -> %d%%", zs->current_max_pool_pct, pool_pct);
+        ZP_INFO("zswap: max_pool_percent %d%% -> %d%%", zs->current_max_pool_pct, pool_pct);
         zs->current_max_pool_pct = pool_pct;
         changed = 1;
     }

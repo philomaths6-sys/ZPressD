@@ -28,7 +28,7 @@ static int is_protected_name(const char *comm, const Config *cfg) {
 }
 
 
-void classify_process(ProcessInfo *proc, Config *cfg) {
+void classify_process(ProcessInfo *proc, const Config *cfg) {
     /* PID 0 or 1 or empty comm -> kernel/init */
     if (proc->pid <=1 || proc->comm[0] == '\0') {
         proc->p_class = CLASS_KERNEL;
