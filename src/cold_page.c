@@ -1,6 +1,7 @@
 #include "cold_page.h"
 #include "process.h"
 #include "logger.h"
+#include "config.h"
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -52,17 +53,23 @@ void cold_score_all(ProcessList *p1) {
             continue;
         }
         /* Update idle_seconds */
-        if(p->minflt_delta ==0 && p->majflt_delta == 0)
-            p->idle_seconds++;
-        else
+        if (p->minflt_delta == 0 && p->majflt_delta == 0) {
+            if (p->sampled_at.tv_sec > 0 && now.tv_sec > p->sampled_at.tv_sec) {
+                p->idle_seconds += (uint64_t)(now.tv_sec - p->sampled_at.tv_sec);
+            }
+            /* Seed to 1 on first cycle so idle_weight is never 0 */
+            if (p->idle_seconds == 0) p->idle_seconds = 1;
+        } else {
             p->idle_seconds = 0;
-        cold_score_compute(p); 
+        }
+        /* Compute the score — was missing, caused score to stay 0.0 forever */
+        cold_score_compute(p);
     }
     /* Sort entire list so top candidates are at front */
     qsort(p1->procs, p1->count, sizeof(ProcessInfo), score_cmp_desc);
 }
 
-int cold_top_candidates(ProcessList *p1, int n, ProcessInfo **out) {
+int cold_top_candidates(ProcessList *p1, int n, ProcessInfo **out,const Config *cfg) {
     struct timespec now;
     clock_gettime(CLOCK_MONOTONIC, &now);
     int found = 0;
@@ -73,7 +80,7 @@ int cold_top_candidates(ProcessList *p1, int n, ProcessInfo **out) {
         /* Skip cooling-off period */
         if (p->last_hinted_at.tv_sec > 0) {
             double since = difftime(now.tv_sec, p->last_hinted_at.tv_sec);
-            if(since < 30.0) { p->cooling_off = 1; continue;}                   /*hardcoded 30 here later review this part*/ 
+            if(since < (double)cfg->cooling_period_secs) { p->cooling_off = 1; continue;}                   /*hardcoded 30 here later review this part*/ /* reviewed*/
         }
         p->cooling_off = 0;
         out[found++] = p;

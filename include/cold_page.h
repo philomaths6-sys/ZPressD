@@ -3,6 +3,7 @@
 
 
 #include "process.h"
+#include "config.h"
 
 /* 
    * cold_score formula :
@@ -21,6 +22,6 @@ void cold_score_compute(ProcessInfo *proc);
 void cold_score_all(ProcessList *p1);
 
 /* Return top N candidates (already scored+sorted). Returns actual count. */
-int cold_top_candidates(ProcessList *p1, int n, ProcessInfo **out);
+int cold_top_candidates(ProcessList *p1, int n, ProcessInfo **out,const Config *cfg);
 
 #endif /* ZPRESSD_COLD_PAGE_H */

@@ -23,7 +23,7 @@ void config_defaults(Config *cfg) {
     cfg->hysteresis_secs = 5;
     cfg->dry_run = 0;
     cfg->tune_zswap = 1;
-    cfg->log_level = 1;         /* LOG_LEVEL_INFO */
+    cfg->log_level = 0;         /* LOG_LEVEL_DEBUG */
     strncpy(cfg->log_file, "/var/log/zpressd.log", sizeof(cfg->log_file)-1);
 }
 

@@ -7,7 +7,7 @@
 #include <syslog.h>
 #include <sys/syslog.h>
 
-static LogLevel g_min_level = LOG_LEVEL_INFO;
+static LogLevel g_min_level = LOG_LEVEL_DEBUG;
 static FILE *g_logfile = NULL;
 static int g_use_syslog = 0;
 

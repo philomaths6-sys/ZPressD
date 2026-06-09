@@ -37,6 +37,7 @@ uninstall:
 	sudo systemctl stop zpressd 2>/dev/null || true
 	sudo systemctl disable zpressd 2>/dev/null || true
 	sudo rm -f /usr/local/sbin/zpressd
+	sudo rm -f /etc/zpressd.conf
 	sudo rm -f /etc/systemd/system/zpressd.service
 	sudo systemctl daemon-reload
 
