@@ -79,7 +79,7 @@ int main(int argc, char *argv[]) {
 
 
     /* Allocate structures */
-    ProcessList *p1 = proc_list_alloc(MAX_PROCESSES);
+    ProcessList *p1 = proclist_alloc(MAX_PROCESSES);
     if (!p1) { LOG_FATAL("OOM allocating process list"); return 1; }
 
     PressureState ps;
@@ -122,7 +122,7 @@ int main(int argc, char *argv[]) {
                 break;
 
             case STATE_MONITORING:
-                proc_list_refresh(p1);
+                proclist_refresh(p1);
                 classify_all(p1, &cfg);
                 cold_score_all(p1);
                 if (ps.level >= PRESSURE_MODERATE) {
@@ -201,7 +201,7 @@ int main(int argc, char *argv[]) {
         }   
     }
     LOG_INFO("zpressd shutting down (received signal)");
-    proc_list_free(p1);
+    proclist_free(p1);
     logger_close();
     unlink(ZPRESSD_PID_FILE);
     return 0;
