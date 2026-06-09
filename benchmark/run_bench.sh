@@ -35,7 +35,7 @@ run_scenario() {
     sleep 3
 
     # Start metrics collector
-    "$SCRIPT_DIR/collect_metrics.sh" "$OUTFILE" &
+    bash "$SCRIPT_DIR/collect_metrics.sh" "$OUTFILE" &
     COLLECTOR_PID=$!
 
     # Start daemon if optimized mode

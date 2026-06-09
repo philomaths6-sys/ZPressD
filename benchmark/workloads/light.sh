@@ -8,7 +8,11 @@ echo "[Workload: Light] Starting..."
 # 1. Start Firefox
 if command -v firefox &> /dev/null; then
     echo "Starting firefox in background..."
-    firefox --headless https://www.wikipedia.org &
+    if [ -n "${SUDO_USER:-}" ]; then
+        sudo -u "$SUDO_USER" firefox --headless https://www.wikipedia.org &
+    else
+        firefox --headless https://www.wikipedia.org &
+    fi
     FIREFOX_PID=$!
 else
     echo "firefox not found, skipping."
@@ -18,7 +22,11 @@ fi
 if command -v vim &> /dev/null; then
     echo "Starting vim in background..."
     # Run vim without UI taking over, just reading a file
-    vim -u NONE -i NONE -n -c "set noswapfile" -c "e /var/log/syslog" &
+    if [ -n "${SUDO_USER:-}" ]; then
+        sudo -u "$SUDO_USER" vim -u NONE -i NONE -n -c "set noswapfile" -c "e /var/log/syslog" &
+    else
+        vim -u NONE -i NONE -n -c "set noswapfile" -c "e /var/log/syslog" &
+    fi
     VIM_PID=$!
 else
     echo "vim not found, skipping."
