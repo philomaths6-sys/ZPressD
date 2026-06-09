@@ -5,7 +5,7 @@
 
 #define CONFIG_PATH_DEFAULT "/etc/zpressd.conf"
 #define MAX_PROTECTED_NAMES 64
-#define PROCTECTED_NAME_LEN 64
+#define PROTECTED_NAME_LEN 64
 
 typedef struct {
     /* Polling interval in (millisecond) */
@@ -35,7 +35,7 @@ typedef struct {
     char   log_file[256];                  /* default : /var/log/zpressd.log */
 
     /* Procted process names (user-defined)*/
-    char   protected_names[MAX_PROTECTED_NAMES][PROCTECTED_NAME_LEN];
+    char   protected_names[MAX_PROTECTED_NAMES][PROTECTED_NAME_LEN];
     int    protected_count;
 } Config;
 

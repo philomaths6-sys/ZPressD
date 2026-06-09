@@ -4,7 +4,7 @@
 #include <sys/types.h>
 #include <stdint.h>
 
-/* /proc/meminfo : key-value pairs -> look up specific feild */
+/* /proc/meminfo : key-value pairs -> look up specific field */
 uint64_t proc_meminfo_get_kb(const char *field);
 
 /* /proc/vmstat : look up a single counter */
@@ -19,7 +19,7 @@ typedef struct {
 
 int proc_parse_psi(const char *path, PsiMetrics *out);
 
-/* /proc/[pid]/stat: feilds we care about (subset) */
+/* /proc/[pid]/stat: fields we care about (subset) */
 typedef struct {
     pid_t pid;
     char comm[64];
@@ -59,7 +59,7 @@ typedef struct {
 /* Read all VMA regions for pid. out must be free()d by caller. */
 int proc_read_maps(pid_t pid, VmaRegion **out, int *count);
 
-/* Enumerate all numeric enteries in /proc. pids must hold >= MAX_PROCESSES ints. */
+/* Enumerate all numeric entries in /proc. pids must hold >= MAX_PROCESSES ints. */
 int proc_enum_pids(pid_t *pids, int max_count);
 
 

@@ -5,9 +5,9 @@
 #include "config.h"
 
 /*
-    * Classifiaction rules (in oriority order):
+    * Classification rules (in priority order):
     *   1. PID==0 or tty_nr == -1 -> KERNEL
-    *   2. comm matches proctected_names list -> INTERACTIVE
+    *   2. comm matches protected_names list -> INTERACTIVE
     *   3. tty_nr !=0 -> INTERACTIVE(has controlled terminal)
     *   4. voluntary_ctxt_switches rate high (>100/sec) -> INTERACTIVE heuristic
     *   5. Default -> BACKGROUND

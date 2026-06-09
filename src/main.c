@@ -126,7 +126,7 @@ int main(int argc, char *argv[]) {
                 classify_all(p1, &cfg);
                 cold_score_all(p1);
                 if (ps.level >= PRESSURE_MODERATE) {
-                    state = STATE_COMPRSESSING;
+                    state = STATE_COMPRESSING;
                     ZP_INFO("MONITORING -> COMPRESSING (PSI=%.2f/%.2f)", ps.psi_some_avg10, ps.psi_full_avg10);
                 } else if (ps.level == PRESSURE_NONE) {
                     state = STATE_IDLE;
@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
                 sleep_ms(cfg.poll_interval_active_ms);
                 break;
 
-            case STATE_COMPRSESSING: {
+            case STATE_COMPRESSING: {
                 proclist_refresh(p1);
                 classify_all(p1, &cfg);
                 cold_score_all(p1);
@@ -155,7 +155,7 @@ int main(int argc, char *argv[]) {
                     consec_low = 0;
                     ZP_INFO("COMPRESSING -> RECOVERY");
                 }
-                if(ps.level == PRESSURE_CRICTICAL) {
+                if(ps.level == PRESSURE_CRITICAL) {
                     state = STATE_EMERGENCY;
                     ZP_WARN("-> EMERGENCY: PSI=%.2f MemAvail=%.1f%%", ps.psi_full_avg10, ps.mem_avail_pct);
                 }
@@ -173,7 +173,7 @@ int main(int argc, char *argv[]) {
                     }
                 } else {
                         consec_low = 0;
-                        state = STATE_COMPRSESSING;
+                        state = STATE_COMPRESSING;
                         ZP_INFO("RECOVERY -> COMPRESSING (pressure returned)");
                     }
                 sleep_ms(cfg.poll_interval_active_ms);
@@ -191,7 +191,7 @@ int main(int argc, char *argv[]) {
                 run_compression_cycle(p1, &ps, &emergency_cfg, &hr);
                 ZP_WARN("EMERGENCY cycle: hinted %d procs %.1f MB ",
                     hr.processes_hinted, (double)hr.total_hinted_bytes/(1024*1024));
-                if(ps.level < PRESSURE_CRICTICAL) {
+                if(ps.level < PRESSURE_CRITICAL) {
                     state = STATE_RECOVERY;
                     ZP_INFO("EMERGENCY -> RECOVERY ");
                 }

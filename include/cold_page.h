@@ -1,5 +1,5 @@
-#ifndef ZPREED_COLD_PAGE_H
-#define ZPREED_COLD_PAGE_H
+#ifndef ZPRESSD_COLD_PAGE_H
+#define ZPRESSD_COLD_PAGE_H
 
 
 #include "process.h"
@@ -20,7 +20,7 @@ void cold_score_compute(ProcessInfo *proc);
 /* Score all BACKGROUND process in list. Sort by score descending.*/
 void cold_score_all(ProcessList *p1);
 
-/* Return top N candidates (already scored+sorted). Retuens actual count. */
+/* Return top N candidates (already scored+sorted). Returns actual count. */
 int cold_top_candidates(ProcessList *p1, int n, ProcessInfo **out);
 
-#endif /* ZPREED_COLD_PAGE_H */
+#endif /* ZPRESSD_COLD_PAGE_H */

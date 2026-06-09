@@ -78,7 +78,7 @@ int pressure_sample(PressureState *ps) {
 
 PressureLevel pressure_classify(const PressureState *ps) {
     if(ps->psi_full_avg10 > 20.0 || ps->mem_avail_pct < 3.0) 
-        return PRESSURE_CRICTICAL;
+        return PRESSURE_CRITICAL;
     if (ps->psi_full_avg10 > 5.0 || ps->mem_avail_pct < 10.0)
         return PRESSURE_HIGH;
     if (ps->psi_some_avg10 > 20.0 || ps->pswpout_rate > 20)

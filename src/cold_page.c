@@ -73,7 +73,7 @@ int cold_top_candidates(ProcessList *p1, int n, ProcessInfo **out) {
         /* Skip cooling-off period */
         if (p->last_hinted_at.tv_sec > 0) {
             double since = difftime(now.tv_sec, p->last_hinted_at.tv_sec);
-            if(since < 30.0) { p->cooling_off = 1; continue;}                   /*harcoded 30 here later review this part*/ 
+            if(since < 30.0) { p->cooling_off = 1; continue;}                   /*hardcoded 30 here later review this part*/ 
         }
         p->cooling_off = 0;
         out[found++] = p;

@@ -53,7 +53,7 @@ int config_load(Config *cfg, const char *path) {
         else if (!strcmp(key, "log_file")) strncpy(cfg->log_file, val, sizeof(cfg->log_file)-1);
         else if (!strcmp(key, "protect")) {
             if (cfg->protected_count < MAX_PROTECTED_NAMES) {
-                strncpy(cfg->protected_names[cfg->protected_count++], val, PROCTECTED_NAME_LEN-1);
+                strncpy(cfg->protected_names[cfg->protected_count++], val, PROTECTED_NAME_LEN-1);
             }
         }
     }

@@ -21,7 +21,7 @@
 #include "zswap_tuner.h"
 #include "proc_utils.h"
 
-/* Global daemon state -- set by signal handelers */
+/* Global daemon state -- set by signal handlers */
 extern volatile int g_running;                    /* set to 0 on SIGTERM/SIGINT */
 extern volatile int g_reload_config;              /* set to 1 on SIGHUP */
 

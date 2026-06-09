@@ -13,7 +13,7 @@ typedef enum {
     LOG_LEVEL_FATAL = 4,
 } LogLevel;
 
-/* Intialise logger . Call once at daemon startup. */
+/* Initialise logger . Call once at daemon startup. */
 void logger_init(LogLevel min_level,  const char * logfile_path, int use_syslog);
 void logger_close(void);
 /* Internal _ use macros below.*/

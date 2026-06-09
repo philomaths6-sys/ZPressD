@@ -57,7 +57,7 @@ int zswap_tune(ZswapState *zs, PressureLevel level, int dry_run) {
     struct timespec now;
     clock_gettime(CLOCK_MONOTONIC, &now);
 
-    /* Hysteresis: don't tharsh zswap params */
+    /* Hysteresis: don't thrash zswap params */
     if (s_last_level == level && s_last_tune.tv_sec > 0) {
         double held = difftime(now.tv_sec, s_last_tune.tv_sec);
         if (held < 5.0) return 0;   /* only retune if level held for 5 seconds */   
@@ -67,7 +67,7 @@ int zswap_tune(ZswapState *zs, PressureLevel level, int dry_run) {
     int pool_pct;
 
     switch(level) {
-        case PRESSURE_CRICTICAL:
+        case PRESSURE_CRITICAL:
             compressor = "zstd"; pool_pct = 50; break;
         case PRESSURE_HIGH:
             compressor = "lz4hc"; pool_pct = 40; break;

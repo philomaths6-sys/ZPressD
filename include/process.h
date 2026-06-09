@@ -62,7 +62,7 @@ typedef struct {
 
 ProcessList *proclist_alloc(int capacity);
 void         proclist_free(ProcessList *p1);
-int          proclist_refresh(ProcessList *p1);              /* re-enumarate /proc */
+int          proclist_refresh(ProcessList *p1);              /* re-enumerate /proc */
 ProcessInfo *proclist_find_pid(ProcessList *p1, pid_t pid);
 
 #endif /* ZPRESSD_PROCESS_H */

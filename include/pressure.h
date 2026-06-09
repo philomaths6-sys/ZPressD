@@ -11,14 +11,14 @@ typedef enum {
     PRESSURE_LOW       = 1,    // PSI some.avg10 > 5%    OR Memavail < 40%
     PRESSURE_MODERATE  = 2,    // PSI some.avg10 > 20%   OR swap_out > 20 pg/s
     PRESSURE_HIGH      = 3,    // PSI full.avg10 > 5%    OR MemAvail < 10%
-    PRESSURE_CRICTICAL = 4,    // PSI full.avg10 > 20%   OR MemAvail < 3%
+    PRESSURE_CRITICAL =  4,    // PSI full.avg10 > 20%   OR MemAvail < 3%
 } PressureLevel;
 
 /* Daemon state machine */
 typedef enum {
     STATE_IDLE         = 0,
     STATE_MONITORING   = 1,
-    STATE_COMPRSESSING = 2,
+    STATE_COMPRESSING =  2,
     STATE_RECOVERY     = 3,
     STATE_EMERGENCY    = 4,
 } DaemonState;

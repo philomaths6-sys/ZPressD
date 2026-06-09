@@ -8,10 +8,10 @@
 static const char *PROTECTED_BUILTIN[] = {
     "bash", "zsh", "fish", "sh", "dash",
     "vim", "vi", "nano", "emacs", "nvim",
-    "code", "code-server", "genome-terminal",
+    "code", "code-server", "gnome-terminal",
     "konsole", "xterm", "alacritty", "kitty", "wezterm",
     "tmux", "screen", "sway", "i3",
-    "zpressd",                /* never compress overselves */
+    "zpressd",                /* never compress ourselves */
     NULL
 };
 
@@ -49,7 +49,7 @@ void classify_process(ProcessInfo *proc, const Config *cfg) {
         proc->p_class = CLASS_INTERACTIVE;
         return;
     }
-    /* can add high voluntry ctxt switches process also as interactive // for later */
+    /* can add high voluntary ctxt switches process also as interactive // for later */
     /* Default : background */
     proc->p_class = CLASS_BACKGROUND;
 }
