@@ -1,0 +1,20 @@
+[Unit]
+Description=ZPressD Adaptive Memory Compression Daemon
+Documentation=https://github.com/philomaths6-sys/ZPressD
+After=local-fs.target
+ConditionPathExists=/proc/pressure/memory
+
+[Service]
+Type=forking
+PIDFile=/var/run/zpressd.pid
+ExecStart=/usr/local/sbin/zpressd
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=5
+
+# Capabilities needed for madvise on other processes
+CapabilityBoundingSet=CAP_SYS_PTRACE CAP_SYS_ADMIN
+AmbientCapabilities=CAP_SYS_PTRACE CAP_SYS_ADMIN
+
+[Install]
+WantedBy=multi-user.target

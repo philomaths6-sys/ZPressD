@@ -1,0 +1,32 @@
+# ZPressD Configuration File
+# /etc/zpressd.conf
+
+# Polling intervals (milliseconds)
+poll_idle_ms   = 500
+poll_active_ms = 100
+
+# madvise budget per compression cycle (MB)
+madvise_budget_mb = 500
+
+# Number of top cold candidates to hint per cycle
+top_candidates_n = 5
+
+# Cooldown: don't re-hint a process within N seconds
+cooling_period_secs = 30
+
+# Hysteresis: require N seconds before changing zswap params
+hysteresis_secs = 5
+
+# Dynamically tune zswap compressor (0=disable, 1=enable)
+tune_zswap = 1
+
+# Dry-run: log decisions but don't call madvise (0=real, 1=dry)
+dry_run = 0
+
+# Log level: 0=DEBUG 1=INFO 2=WARN 3=ERROR
+log_level = 1
+log_file = /var/log/zpressd.log
+
+# Additional protected process names (one per line)
+# protect = myapp
+# protect = custom-server
