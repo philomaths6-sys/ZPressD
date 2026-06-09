@@ -28,8 +28,10 @@ else
     exit 1
 fi
 
-# Duration for the stress phase (after background procs are established)
-export DURATION=90  # seconds of stress phase data collection
+# Duration for the stress phase — heavy gets longer for cleaner signal
+DURATION_HEAVY=180
+DURATION_OTHER=60
+export DURATION=$DURATION_OTHER  # default, overridden per scenario below
 
 mkdir -p "$RESULTS_DIR"
 
@@ -132,6 +134,7 @@ run_scenario() {
 
 # Run scenarios — heavy is the primary showcase, run it first
 for SCENARIO in heavy medium light; do
+    [ "$SCENARIO" = "heavy" ] && export DURATION=$DURATION_HEAVY || export DURATION=$DURATION_OTHER
     run_scenario "$SCENARIO" "$SCENARIO" "baseline"
     echo "[bench] cooldown 15s"
     sleep 15
