@@ -59,7 +59,8 @@ run_scenario() {
     sleep $DURATION
 
     # Cleanup
-    kill $WORKLOAD_PID 2>/dev/null || true
+    kill -9 $WORKLOAD_PID 2>/dev/null || true
+    pkill -9 stress-ng 2>/dev/null || true
     kill $COLLECTOR_PID 2>/dev/null || true
     if [ "$MODE" = "optimized" ]; then
         kill $DAEMON_PID 2>/dev/null || true
